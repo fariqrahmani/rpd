@@ -3,49 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Excel Processor</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <title>File Converter</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <input type="file" id="upload" />
-  <button onclick="processExcel()">Process Excel</button>
+  <div class="container">
+    <h1>Excel File Converter</h1>
+    <input type="file" id="upload" accept=".xlsx" />
+    <button onclick="processExcel()">Convert</button>
+  </div>
 
-  <script>
-    let workbook;
-
-    document.getElementById('upload').addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = new Uint8Array(e.target.result);
-        workbook = XLSX.read(data, { type: 'array' });
-      };
-      reader.readAsArrayBuffer(file);
-    });
-
-    function processExcel() {
-      if (!workbook) return alert('Please upload a file first');
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-      // Cari indeks kolom "NAMA REKENING"
-      const headerRow = json[0];
-      const namaRekeningIndex = headerRow.indexOf("NAMA REKENING");
-
-      if (namaRekeningIndex === -1) return alert('Kolom "NAMA REKENING" tidak ditemukan');
-
-      // Ambil data dari kolom "NAMA REKENING"
-      const processedData = json.slice(1).map(row => ({
-        "NAMA REKENING": row[namaRekeningIndex]
-      }));
-
-      const newSheet = XLSX.utils.json_to_sheet(processedData);
-      const newWorkbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(newWorkbook, newSheet, 'ProcessedData');
-      const wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'array' });
-      saveAs(new Blob([wbout], { type: 'application/octet-stream' }), 'processed_data.xlsx');
-    }
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
